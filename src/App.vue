@@ -1,47 +1,49 @@
 <template>
   <div>
-    <ContatoList :contatos="contatos" @excluir = "excluirContato"></ContatoList>
+    <ContatoList :contatos="contatos" @excluir="excluirContato"></ContatoList>
     <NovoContato @adicionar="adicionarContato"></NovoContato>
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import ContatoList from './components/ContatoList.vue';
 import NovoContato from './components/NovoContato.vue';
-import apiClient from '@/api'; 
+import apiClient from '@/api';
 
-export default {
-  components: {
-    ContatoList,
-    NovoContato
-  },
-  data() {
-    return {
-      contatos: []
-    };
-  },
-  created() {
-    this.carregarContatos();
-  },
-  methods: {
-    async carregarContatos() {
-      try {
-        const response = await apiClient.get('/contatos');
-        this.contatos = response.data;
-      } catch (error) {
-        console.error('Erro ao carregar contatos:', error);
-      }
-    },
-    adicionarContato(novoContato) {
-        this.contatos.push(novoContato); 
-    },
+const contatos = ref([]);
 
-    excluirContato(id) {
-        this.contatos = this.contatos.filter(contato => contato.id !== id); 
-    }
+const carregarContatos = async () => {
+  try {
+    const response = await apiClient.get('/contatos');
+    contatos.value = response.data;
+  } catch (error) {
+    console.error('Erro ao carregar contatos:', error);
   }
-  }
+};
+
+const adicionarContato = (novoContato) => {
+  contatos.value.push(novoContato);
+};
+
+const excluirContato = (id) => {
+  contatos.value = contatos.value.filter((contato) => contato.id !== id);
+};
+
+onMounted(carregarContatos);
 </script>
+
+<style scoped>
+#app {
+  font-family: Arial, Helvetica, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #f8f8f8;
+}
+</style>
 
 <style>
 #app {
