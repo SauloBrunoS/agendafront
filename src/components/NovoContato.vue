@@ -1,59 +1,53 @@
 <template>
-    <div>
-      <h2>Novo Contato</h2>
-      <form @submit.prevent="adicionarContato">
-        <label for="nome">Nome:</label>
-        <input v-model="novoContato.nome" required>
-        <label for="telefone">Telefone:</label>
-        <input v-model="novoContato.telefone" required>
-        <label for="endereco">Endereço:</label>
-        <input v-model="novoContato.endereco">
-        <label for="status">Status:</label>
-        <select v-model="novoContato.status" required>
-          <option value="ativo">Ativo</option>
-          <option value="inativo">Inativo</option>
-        </select>
-        <button type="submit">Adicionar Contato</button>
-      </form>
-    </div>
+  <div>
+    <h2>Novo Contato</h2>
+    <form @submit.prevent="adicionarContato">
+      <label for="nome">Nome:</label>
+      <input v-model="novoContato.nome" required />
+      <label for="telefone">Telefone:</label>
+      <input v-model="novoContato.telefone" required />
+      <label for="endereco">Endereço:</label>
+      <input v-model="novoContato.endereco" />
+      <label for="status">Status:</label>
+      <select v-model="novoContato.status" required>
+        <option value="ativo">Ativo</option>
+        <option value="inativo">Inativo</option>
+      </select>
+      <button type="submit">Adicionar Contato</button>
+    </form>
+  </div>
 </template>
 
-<script>
-  import apiClient from '@/api'; 
-  
-  export default {
-    data() {
-      return {
-        novoContato: {
-          nome: '',
-          telefone: '',
-          endereco: '',
-          status: 'ativo'
-        },
-      };
-    },
-    methods: {
-      async adicionarContato() {
-        try {
-          const response = await apiClient.post('/contatos', this.novoContato);
-          this.$emit('adicionar', response.data);
-          this.novoContato = {
-            nome: '',
-            telefone: '',
-            endereco: '',
-            status: 'ativo'
-          };
-        } catch (error) {
-          console.error('Erro ao adicionar contato:', error);
-          this.mensagem = 'Erro ao adicionar contato.';
-        }
-      }
-    }
-  }
-</script>
-  
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import apiClient from '@/api';
 
-<style>
+const novoContato = ref({
+  nome: '',
+  telefone: '',
+  endereco: '',
+  status: 'ativo',
+});
+
+const adicionarContato = async () => {
+  try {
+    const response = await apiClient.post('/contatos', novoContato.value);
+    const emit = defineEmits(['adicionar']);
+    emit('adicionar', response.data);
+    novoContato.value = {
+      nome: '',
+      telefone: '',
+      endereco: '',
+      status: 'ativo',
+    };
+  } catch (error) {
+    console.error('Erro ao adicionar contato:', error);
+  }
+};
+
+</script>
+
+<style scoped>
 form {
   background-color: #fff;
   border-radius: 5px;
@@ -88,4 +82,3 @@ button[type="submit"] {
   cursor: pointer;
 }
 </style>
-  

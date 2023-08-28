@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-const apiClient = axios.create({
-  baseURL: 'http://localhost:8090/api', // URL base da sua API
-  timeout: 10000 // Timeout da requisição (opcional)
+const apiClient= axios.create({
+  baseURL: 'http://localhost:8090/api',
+  timeout: 10000,
 });
 
 export default apiClient;

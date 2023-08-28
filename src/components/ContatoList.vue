@@ -1,33 +1,42 @@
 <template>
-    <div>
-      <h2>Lista de Contatos</h2>
-      <ul>
-        <li v-for="contato in contatos" :key="contato.id">
-          {{ contato.nome }} - {{ contato.telefone }} - {{ contato.endereco }} - {{ contato.status }}
-          <button @click="excluirContato(contato.id)">Excluir</button>
-        </li>
-      </ul>
-    </div>
+  <div>
+    <h2>Lista de Contatos</h2>
+    <ul>
+      <li v-for="contato in contatos" :key="contato.id">
+        {{ contato.nome }} - {{ contato.telefone }} - {{ contato.endereco }} - {{ contato.status }}
+        <button @click="excluirContato(contato.id)">Excluir</button>
+      </li>
+    </ul>
+  </div>
 </template>
-  
-<script>
-  import apiClient from '@/api'; 
-  
-  export default {
-    props: ['contatos'],
-    methods: {
-      async excluirContato(id) {
-        try {
-          await apiClient.delete(`/contatos/${id}`);
-          this.$emit('excluir', id);
-        } catch (error) {
-          console.error('Erro ao excluir contato:', error);
-        }
-      }
-    }
+
+<script setup lang="ts">
+import apiClient from '@/api';
+
+interface Contact {
+  id: number;
+  nome: string;
+  telefone: string;
+  endereco: string;
+  status: string;
+}
+
+const props = defineProps<{
+  contatos: Contact[];
+}>();
+
+const excluirContato = async (id: number) => {
+  try {
+    await apiClient.delete(`/contatos/${id}`);
+    const emit = defineEmits(['excluir']);
+    emit('excluir', id)
+    console.log(`Contato com o ID ${id} excluído`);
+  } catch (error) {
+    console.error('Erro ao excluir contato:', error);
   }
+};
 </script>
-  
+
 <style>
 ul {
   list-style: none;
@@ -54,3 +63,4 @@ button {
   cursor: pointer;
 }
 </style>
+  
